@@ -21,7 +21,8 @@ test('ticket workspace and legacy graph share the API without losing legacy reco
  const workflow = store.all().workflow;
  const bootstrap = await get('/bootstrap');
  assert.equal(bootstrap.workflow, undefined, 'legacy response must not leak workflow');
- assert.deepEqual(bootstrap.customers, before.customers);
+ assert.deepEqual(bootstrap.customers.map(({entity,...c})=>c), before.customers);
+ assert.deepEqual(['SPD','QTS','QTG'].map(e=>bootstrap.customers.filter(c=>c.entity===e).length),[6,6,6]);
  const plotted = graphEntities.flatMap(entity => groupGraphCustomers(bootstrap.customers, entity));
  assert.equal(plotted.length, 18);
  const simulation = await fetch(base + '/simulate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sourceId: 'c1', targetId: 'c2' }) });
